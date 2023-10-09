@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         Log.v("Test JNI", "uri = $uriCache")
         // Test access fichiers
         val stdoutFilePath = cacheDir.absolutePath + File.separator + "stdout.txt"
+        val stdoutFile = File(stdoutFilePath)
         val stderrFilePath = cacheDir.absolutePath + File.separator + "stderr.txt"
         val extractDir = File(cacheDir.absolutePath+ File.separator+"extract")
         val filtersList = listOf("*.jpg", "*.webp", "*.png", "*.gif", "*.bmp", "*.jpeg")
@@ -118,9 +119,10 @@ class MainActivity : AppCompatActivity() {
 
                 // List an archive content (get the number of files)
                 result = FnyLib7z.getInstance().listFiles(lastZipUri, returnCount = true, filtersList=listOf("*.jpg"), stdOutputPath=stdoutFilePath)
-                if (result > 0) {
+                if (result >= 0) {
                     rapportTest +=  "\n\nlistFiles:: numbers of files = $result (filter=$filtersList)"
                     Log.v(TAG, "    listFiles:: numbers of files = $result")
+
                 } else {
                     rapportTest +=  "\n\nlistFiles result=${FnyLib7z.getResultMessage(result)}"
                     Log.v(TAG, "    listFiles = $result")
@@ -128,7 +130,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Create archive file from files
                 val newArchiveFile = File(cacheDir.absolutePath+ File.separator+"newArchive.zip")
-                result = FnyLib7z.getInstance().compressFiles(newArchiveFile, paths=listOf(extractDir.absolutePath+File.separator+"/*.jpg"), stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
+                result = FnyLib7z.getInstance().compressFiles(newArchiveFile, paths=listOf(extractDir.absolutePath+File.separator+"*.jpg"), stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
                 rapportTest +=  "\n\ncompressFiles::  ${FnyLib7z.getResultMessage(result)} in $newArchiveFile"
                 Log.v(TAG, "    compressFiles::  ${result==0} in $newArchiveFile")
 
@@ -139,11 +141,25 @@ class MainActivity : AppCompatActivity() {
                 rapportTest +=  "\n\ndeleteInArchive:: ($filesToDeleteList) result=${FnyLib7z.getResultMessage(result)}"
                 Log.v(TAG, "    deleteInArchive = ${result == 0} $filesToDeleteList")
 
-
-
+                // List files with details
                 result = FnyLib7z.getInstance().listFiles(lastZipUri, stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
                 rapportTest +=  "\n\nlistFilesWithUri:: result = ${FnyLib7z.getResultMessage(result)}"
                 Log.v(TAG, "    listFilesWithUri:: result = $result")
+
+                if (stdoutFile.exists()) {
+                    val items = FnyLib7z.getInstance().parseListFile(stdoutFile)
+                    var nbFiles = 0
+                    var nbDirs= 0
+                    items.forEach {
+                        if (it.isDir)
+                            nbDirs++
+                        else
+                            nbFiles++
+                    }
+                    rapportTest +=  "   nb files=$nbFiles     nb directories=$nbDirs"
+                    Log.v(TAG, "   nb files=$nbFiles     nb directories=$nbDirs")
+
+                }
 
             } else {
                 rapportTest += "\n${lastZipFile.absolutePath} doesn't exist"

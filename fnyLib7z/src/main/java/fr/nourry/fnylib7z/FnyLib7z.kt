@@ -4,6 +4,24 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+
+data class itemListFnyLib7z(val name:String,
+                            val size:Int,
+                            val compressedSize:Int,
+                            val isDir:Boolean,
+                            val isReadOnly:Boolean,
+                            val isHidden:Boolean,
+                            val isSystem:Boolean,
+                            val isArchive:Boolean,
+                            val date:Date) {
+    override fun toString(): String {
+        return "$date $isDir $size $compressedSize $name"
+    }
+
+}
+
 
 class FnyLib7z private constructor() {
 
@@ -173,7 +191,48 @@ class FnyLib7z private constructor() {
         return RESULT_PARCEL_DESC_ERROR;
     }
 
-    // TODO Write a function that read the list file...
+    fun parseListFile(stdoutFile: File):List<itemListFnyLib7z> {
+        val mutList = mutableListOf<itemListFnyLib7z>()
+        val lineSeparator = "------------------- ----- ------------ ------------  ------------------------"
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        var isParsing = false
+        stdoutFile.forEachLine { line ->
+            if (line == lineSeparator && !isParsing) {
+                isParsing = true
+            } else if (isParsing) {
+                if (line == lineSeparator) {
+                    isParsing = false
+                } else {
+//                    Log.v(TAG, line)
+                    val strDate = line.substring(IntRange(0, 18))
+                    val strAttr = line.substring(IntRange(20, 24))
+                    val strSize = line.substring(IntRange(26, 37))
+                    val strCompressedSize = line.substring(IntRange(39, 50))
+                    val strName = line.substring(53)
+
+//                    Log.v(TAG, "$strDate|$strAttr|$strSize|$strCompressedSize||$strName")
+                    mutList.add(
+                        itemListFnyLib7z(
+                            name=strName,
+                            isDir = (strAttr[0]=='D'),
+                            isReadOnly = (strAttr[1]=='R'),
+                            isHidden = (strAttr[2]=='H'),
+                            isSystem = (strAttr[3]=='S'),
+                            isArchive = (strAttr[4]=='A'),
+                            size = strSize.trim().toInt(),
+                            compressedSize = strCompressedSize.trim().toInt(),
+                            date = dateFormatter.parse(strDate)!!
+                        )
+                    )
+                }
+            }
+        }
+
+        return mutList
+    }
+
+
 
 
     // Create an archive
@@ -372,7 +431,6 @@ class FnyLib7z private constructor() {
         }
         return defaultNameIfNull
     }
-
 
 }
 
