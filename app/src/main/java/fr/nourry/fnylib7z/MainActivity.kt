@@ -91,16 +91,16 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 Log.v(TAG, "   path = $path exists=${file.exists()} size=${file.length()}")
-                val size = intFromJNIGetUriFileSize(path)
-                Log.v(TAG, "      size = $size")
+//                val size = intFromJNIGetUriFileSize(path)
+//                Log.v(TAG, "      size = $size")
             }
-            val parcelFileDescriptor = contentResolver.openFileDescriptor(comicUri, "r")
+/*            val parcelFileDescriptor = contentResolver.openFileDescriptor(comicUri, "r")
             parcelFileDescriptor?.let {
                 val i = parcelFileDescriptor.detachFd()
                 val size2 = FnyLib7z.intFromJNIGetFDFileSize(i)
                 Log.v(TAG, "    size2 = $size2")
                 parcelFileDescriptor.close()
-            }
+            }*/
         }
 
         // If a zip file was found, let's play with the last one
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 // Extract files from Uri
                 result = FnyLib7z.getInstance().uncompress(lastZipUri, dirToExtract=extractDir, numListToExtract=numPagesToExtract, filtersList=filtersList)
                 rapportTest +=  "\nUnarchive ${lastZipFile.absolutePath} (fileSize=$fileSize) \n result=${FnyLib7z.getResultMessage(result)} in $extractDir"
-                Log.i(TAG, " ZIP result = $result in $extractDir")
+                Log.v(TAG, " ZIP result = $result in $extractDir")
 
                 // List an archive content (get the number of files)
                 result = FnyLib7z.getInstance().listFiles(lastZipUri, returnCount = true, filtersList=listOf("*.jpg"), stdOutputPath=stdoutFilePath)
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
             } else {
                 rapportTest += "\n${lastZipFile.absolutePath} doesn't exist"
-                Log.i(TAG, "the file doesn't exist !!")
+                Log.v(TAG, "the file doesn't exist !!")
             }
         } else {
             rapportTest += "\nlastZipFile is null !"
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                 val fileSize = lastRarFile.length()
                 val result = Lib7z.getInstance().uncompress(lastRarUri, dirToExtract=extractDir, numListToExtract=numPagesToExtract, filtersList=filtersList)
                 rapportTest +=  "\nUnarchive ${lastRarFile.absolutePath} (fileSize=$fileSize) \n result=${Lib7z.getResultMessage(result)} in $extractDir"
-                Log.i(TAG, " RAR result = $result in $extractDir}")
+                Log.v(TAG, " RAR result = $result in $extractDir}")
             }
         }*/
         binding.sampleText.text = rapportTest

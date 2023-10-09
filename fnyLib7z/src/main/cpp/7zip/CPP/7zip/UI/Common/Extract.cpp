@@ -141,7 +141,7 @@ static HRESULT DecompressArchive(
       // FNY - filter the files (use iFiltered as true index)
       if (shouldFilterWithIndexes) {
         iFiltered++;
-        __android_log_print(ANDROID_LOG_DEBUG, "Extract.cpp", "i=%d iFiltered=%d isDir=%d", i, iFiltered, item.IsDir);
+        __android_log_print(ANDROID_LOG_VERBOSE, "Extract.cpp", "i=%d iFiltered=%d isDir=%d", i, iFiltered, item.IsDir);
         if (options.itemsToExtract.FindInSorted(iFiltered) < 0) {
           // Ignore this item
           continue;

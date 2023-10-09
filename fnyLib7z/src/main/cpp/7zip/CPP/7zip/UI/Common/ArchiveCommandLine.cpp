@@ -1016,7 +1016,6 @@ HRESULT EnumerateDirItemsAndSort(
     CDirItemsStat &st,
     IDirItemsCallback *callback)
 {
-    __android_log_print(ANDROID_LOG_DEBUG,"ArchiveCommandLine.cpp","EnumerateDirItemsAndSort");
   FStringVector paths;
   
   {
@@ -1143,7 +1142,7 @@ void CArcCmdLineParser::Parse2(CArcCmdLineOptions &options)
   }
   FOR_VECTOR(i, options.ItemsToExtract) {
       int numItem =options.ItemsToExtract[i];
-      __android_log_print(ANDROID_LOG_DEBUG,"ArchiveCommandeLine.cpp","options.ItemsToExtract[%d]=%d", i, numItem);
+      __android_log_print(ANDROID_LOG_VERBOSE,"ArchiveCommandeLine.cpp","options.ItemsToExtract[%d]=%d", i, numItem);
   }
   // END -fny-n option
 

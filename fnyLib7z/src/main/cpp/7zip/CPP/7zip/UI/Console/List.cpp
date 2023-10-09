@@ -1071,7 +1071,7 @@ HRESULT ListArchives(CCodecs *codecs,
     options.stream = NULL;
     options.filePath = arcPath;
     options.idFileDescriptor = idFileDescriptor;              // FNY
-    __android_log_print(ANDROID_LOG_DEBUG,"List.cpp","options.IdFileDescriptor=%d", idFileDescriptor);
+    __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","options.IdFileDescriptor=%d", idFileDescriptor);
 
     if (enableHeaders)
     {
@@ -1088,7 +1088,7 @@ HRESULT ListArchives(CCodecs *codecs,
       *g_ErrStream << endl << kError << arcPath << " : ";
       if (result == S_FALSE)
       {
-        __android_log_print(ANDROID_LOG_DEBUG,"List.cpp","ListArchives arcLink.Open_Strict != S_OK");
+        __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","ListArchives arcLink.Open_Strict != S_OK");
         Print_OpenArchive_Error(*g_ErrStream, codecs, arcLink);
       }
       else
@@ -1180,7 +1180,7 @@ HRESULT ListArchives(CCodecs *codecs,
     CReadArcItem item;
     UStringVector pathParts;
 
-    __android_log_print(ANDROID_LOG_DEBUG,"List.cpp","numItems = %d", numItems);
+    __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","numItems = %d", numItems);
     for (UInt32 i = 0; i < numItems; i++)
     {
       if (NConsoleClose::TestBreakSignal())
@@ -1296,7 +1296,7 @@ HRESULT ListArchives(CCodecs *codecs,
   if (numErrors == 1 && lastError != 0)
     return lastError;
 
-  __android_log_print(ANDROID_LOG_DEBUG,"List.cpp","nb files = %d", stat2total.MainFiles.NumFiles);
+  __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","nb files = %d", stat2total.MainFiles.NumFiles);
 
   if (shouldReturnCountItems)
     return stat2total.MainFiles.NumFiles;   // FNY - return the numbers of files

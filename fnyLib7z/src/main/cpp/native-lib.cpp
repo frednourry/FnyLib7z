@@ -30,14 +30,14 @@ Java_fr_nourry_fnylib7z_FnyLib7z_00024Companion_stringFromJNIWriteTempFile(JNIEn
 
     // Path is an jstring passed as an arg of a function
     const char *charPath = (*env).GetStringUTFChars( path , 0 ) ;
-    __android_log_print(ANDROID_LOG_DEBUG, "SO", "fopen(%s)", charPath);
+    __android_log_print(ANDROID_LOG_VERBOSE, "SO", "fopen(%s)", charPath);
 
     FILE* file = fopen(charPath,"ab");
     if (file != NULL) {
         (*env).ReleaseStringUTFChars( path , charPath );
         int isWriting = fputs("Testing!\n", file);
         response = (isWriting>=0);
-        __android_log_print(ANDROID_LOG_DEBUG, "SO", "isWriting = %d", response);
+        __android_log_print(ANDROID_LOG_VERBOSE, "SO", "isWriting = %d", response);
         fclose(file);
     }
 
@@ -54,19 +54,20 @@ Java_fr_nourry_fnylib7z_FnyLib7z_00024Companion_intFromJNIGetFDFileSize(JNIEnv *
         __android_log_print(ANDROID_LOG_WARN, "SO", "fd < 0 !");
         return (jint)-1;
     } else {
+        // For test, try to read some characters...
         FILE* p_file = fdopen(fd, "r");
         if (p_file != NULL) {
-            __android_log_print(ANDROID_LOG_DEBUG, "SO", "file opened");
+            __android_log_print(ANDROID_LOG_VERBOSE, "SO", "file opened");
             char buf[6];
             int i = fread(buf, sizeof (buf), 1, p_file);
-            __android_log_print(ANDROID_LOG_DEBUG, "SO", "   i=%d  buf=%s", i, buf);
+            __android_log_print(ANDROID_LOG_VERBOSE, "SO", "   i=%d  buf=%s", i, buf);
 
             fseek(p_file,0,SEEK_END);
             int size = ftell(p_file);
             fclose(p_file);
             return (jint) size;
         } else {
-            __android_log_print(ANDROID_LOG_DEBUG, "SO", "can't open file");
+            __android_log_print(ANDROID_LOG_VERBOSE, "SO", "can't open file");
             return (jint) -1;
         }
     }
@@ -78,17 +79,17 @@ Java_fr_nourry_fnylib7z_FnyLib7z_00024Companion_intFromJNIGetUriFileSize(JNIEnv 
                                                                          jstring path) {
     // DOESN'T WORK !!!
     const char *thisPath = (*env).GetStringUTFChars(path, 0);
-    __android_log_print(ANDROID_LOG_DEBUG, "SO", "trying opening file: %s", thisPath);
+    __android_log_print(ANDROID_LOG_VERBOSE, "SO", "trying opening file: %s", thisPath);
 
     FILE *p_file = fopen(thisPath,"r");
     if (p_file != NULL) {
-        __android_log_print(ANDROID_LOG_DEBUG, "SO", "file opened: %s", thisPath);
+        __android_log_print(ANDROID_LOG_VERBOSE, "SO", "file opened: %s", thisPath);
         fseek(p_file,0,SEEK_END);
         int size = ftell(p_file);
         fclose(p_file);
         return (jint) size;
     } else {
-        __android_log_print(ANDROID_LOG_DEBUG, "SO", "  file not open...");
+        __android_log_print(ANDROID_LOG_VERBOSE, "SO", "  file not open...");
     }
     return (jint) -1;
 
@@ -109,7 +110,7 @@ JNIEXPORT jint JNICALL
 Java_fr_nourry_fnylib7z_FnyLib7z_00024Companion_executeCommand7z(JNIEnv *env, jobject thiz,
                                                                  jstring command_) {
     const char *command = env->GetStringUTFChars(command_, nullptr);
-    __android_log_print(ANDROID_LOG_DEBUG,"SO","CMD:[%s]", command);
+    __android_log_print(ANDROID_LOG_VERBOSE,"SO","CMD:[%s]", command);
     int ret = executeCommand(command);
     env->ReleaseStringUTFChars(command_, command);
     return (jint) ret;

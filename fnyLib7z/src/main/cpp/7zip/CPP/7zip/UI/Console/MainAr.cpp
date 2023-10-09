@@ -63,13 +63,13 @@ int MY_CDECL main
       if (strcmp(subString1, "-fny-stdout") == 0) {
         char subString[len];
         strncpy(subString, args[i]+11, len);
-        __android_log_print(ANDROID_LOG_DEBUG,"Main.cpp","output filename (-fny-stdout option)=%s", subString);
+        __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","output filename (-fny-stdout option)=%s", subString);
         g_StdOut.Open(subString);
       }
       else if (strcmp(subString1, "-fny-stderr") == 0) {
         char subString[len];
         strncpy(subString, args[i]+11, len);
-        __android_log_print(ANDROID_LOG_DEBUG,"Main.cpp","output filename (-fny-stderr option)=%s", subString);
+        __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","output filename (-fny-stderr option)=%s", subString);
         g_StdErr.Open(subString);
       }
     }

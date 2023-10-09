@@ -69,7 +69,7 @@ bool str2args(const char *s, char argv[][ARGV_LEN_MAX], int* argc) {
                         continue;
                     }
                 }
-                __android_log_print(ANDROID_LOG_DEBUG,"SO","Parse Error! Bad quotes\n");
+                __android_log_print(ANDROID_LOG_VERBOSE,"SO","Parse Error! Bad quotes\n");
                 ret = false;
                 break;
             case '\\':
@@ -97,11 +97,11 @@ bool str2args(const char *s, char argv[][ARGV_LEN_MAX], int* argc) {
     *argc = arg_count;
 
     if (in_container) {
-        __android_log_print(ANDROID_LOG_DEBUG,"SO","Parse Error! Still in container\n");
+        __android_log_print(ANDROID_LOG_VERBOSE,"SO","Parse Error! Still in container\n");
         ret = false;
     }
     if (escaped) {
-        __android_log_print(ANDROID_LOG_DEBUG,"SO","Parse Error! Unused escape (\\)\n");
+        __android_log_print(ANDROID_LOG_VERBOSE,"SO","Parse Error! Unused escape (\\)\n");
         ret = false;
     }
     return ret;
