@@ -13,6 +13,7 @@
 #include "../Common/ExitCode.h"
 
 #include "ConsoleClose.h"
+#include <string>
 
 using namespace NWindows;
 
@@ -47,6 +48,11 @@ static void PrintError(const char *message)
 
 #define NT_CHECK_FAIL_ACTION *g_StdStream << "Unsupported Windows version"; return NExitCode::kFatalError;
 
+inline int isPrefix(std::string pre, std::string str)
+{
+  return str.compare(0, pre.size(), pre)==0;
+}
+
 int MY_CDECL main
 (
   #ifndef _WIN32
@@ -54,28 +60,43 @@ int MY_CDECL main
   #endif
 )
 {
-  // FNY : Init the log files, so should retrieve the option -fny-stdout<output file> now
+  // FNY : Init the log files, so should retrieve the option -fny-stdout<output file> and -fny-stderr<error file>now
+  bool hasOptionFnyStdOut = false;
+  bool hasOptionFnyStdErr = false;
   for (int i=0; i<numArgs; i++) {
     int len = strlen(args[i]);
-    char subString1 [12];
+
     if (len > 12) {
-      strncpy(subString1, args[i], 11);
-      if (strcmp(subString1, "-fny-stdout") == 0) {
-        char subString[len];
-        strncpy(subString, args[i]+11, len);
-        __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","output filename (-fny-stdout option)=%s", subString);
-        g_StdOut.Open(subString);
+      bool isStdOutPrefix = isPrefix("-fny-stdout", args[i]);
+      if (isStdOutPrefix) {
+          char subString[len];
+          strncpy(subString, args[i]+11, len);
+//          __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","output filename (-fny-stdout option)=%s", subString);
+          hasOptionFnyStdOut = true;
+          g_StdOut.Open(subString);
       }
-      else if (strcmp(subString1, "-fny-stderr") == 0) {
-        char subString[len];
-        strncpy(subString, args[i]+11, len);
-        __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","output filename (-fny-stderr option)=%s", subString);
-        g_StdErr.Open(subString);
+      else {
+        bool isStdErrPrefix = isPrefix("-fny-stderr", args[i]);
+        if (isStdErrPrefix) {
+          char subString[len];
+          strncpy(subString, args[i] + 11, len);
+//          __android_log_print(ANDROID_LOG_VERBOSE, "Main.cpp", "output filename (-fny-stderr option)=%s", subString);
+          hasOptionFnyStdErr = true;
+          g_StdErr.Open(subString);
+        }
       }
     }
   }
+  if (!hasOptionFnyStdOut) {
+//      __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","no output filename, so default g_StdOut");
+    g_StdOut = CStdOutStream(stdout);
+  }
+  if (!hasOptionFnyStdErr) {
+//      __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","no output error filename, so default g_StdErr");
+    g_StdErr = CStdOutStream(stderr);
+  }
 
-   // END NOURRY
+   // END FNY
 
   g_ErrStream = &g_StdErr;
   g_StdStream = &g_StdOut;
@@ -203,6 +224,7 @@ int MY_CDECL main
   }
 
   g_StdOut.Close();
+  g_StdErr.Close();
 
   return res;
 }

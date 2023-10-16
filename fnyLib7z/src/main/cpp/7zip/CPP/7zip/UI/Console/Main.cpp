@@ -827,7 +827,7 @@ int Main2(
     UStringVector ArchivePathsFullSorted;
 
     if (options.IdFileDescriptor > 0) {    // FNY - skip the test as the archive was already opened
-      __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","adding paths...");
+//      __android_log_print(ANDROID_LOG_VERBOSE,"Main.cpp","adding paths...");
       ArchivePathsSorted.Add(options.ArchiveName);
       ArchivePathsFullSorted.Add(options.ArchiveName);
     }

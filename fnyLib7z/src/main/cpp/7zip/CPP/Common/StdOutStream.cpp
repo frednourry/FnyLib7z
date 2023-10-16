@@ -15,8 +15,11 @@ static const char *kFileOpenMode = "wt";
 
 extern int g_CodePage;
 
-CStdOutStream g_StdOut(stdout);
-CStdOutStream g_StdErr(stderr);
+//CStdOutStream g_StdOut(stdout); // FNY
+//CStdOutStream g_StdErr(stderr); // FNY
+
+CStdOutStream g_StdOut; // FNY : Will be initialize in MainAr::Main(...)
+CStdOutStream g_StdErr;
 
 bool CStdOutStream::Open(const char *fileName) throw()
 {
