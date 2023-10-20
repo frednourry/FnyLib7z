@@ -1103,7 +1103,6 @@ HRESULT ListArchives(CCodecs *codecs,
       *g_ErrStream << endl << kError << arcPath << " : ";
       if (result == S_FALSE)
       {
-//        __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","ListArchives arcLink.Open_Strict != S_OK");
         Print_OpenArchive_Error(*g_ErrStream, codecs, arcLink);
       }
       else

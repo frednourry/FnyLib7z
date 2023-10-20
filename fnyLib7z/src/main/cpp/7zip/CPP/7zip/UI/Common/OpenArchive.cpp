@@ -1,6 +1,5 @@
 // OpenArchive.cpp
 
-#include <android/log.h>
 #include "StdAfx.h"
 
 // #define SHOW_DEBUG_INFO
@@ -2975,7 +2974,7 @@ HRESULT CArc::OpenStreamOrFile(COpenOptions &op)
     fileStreamSpec = new CInFileStream(true);
     fileStream = fileStreamSpec;
     Path = filePath;
-    if (op.idFileDescriptor>=0) {
+    if (op.idFileDescriptor>0) {
       // FNY : No need to open the file, it's already done
       fileStreamSpec->File.setFd(op.idFileDescriptor);
     }
