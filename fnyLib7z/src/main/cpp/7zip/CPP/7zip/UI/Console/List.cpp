@@ -971,12 +971,13 @@ bool CensorNode_CheckPath(const NWildcard::CCensorNode &node, const CReadArcItem
 // FNY : Add a structure to compare items in archives (to sort them)
 typedef struct {
     UString FilePath;
+    UString LowerFilePath;
     UInt32 index;
     CListStat st;
 } ItemToPrint;
 
 bool compareItemToPrint(ItemToPrint item1, ItemToPrint item2) {
-  return wcscmp(item1.FilePath, item2.FilePath)<=0;
+  return wcscmp(item1.LowerFilePath, item2.LowerFilePath)<=0;
 }
 // END FNY
 
@@ -1263,7 +1264,9 @@ HRESULT ListArchives(CCodecs *codecs,
       // FNY
       if (sortList) {
         // FNY : don't write the information now, just remembers them in 'itemsToPrint'
-        itemsToPrint.push_back({fp.FilePath, i, st});
+        UString lowerFilePath = fp.FilePath;
+        lowerFilePath.MakeLower_Ascii();
+        itemsToPrint.push_back({fp.FilePath, lowerFilePath, i, st});
       } else {
         RINOK(fp.PrintItemInfo(i, st));
       }
