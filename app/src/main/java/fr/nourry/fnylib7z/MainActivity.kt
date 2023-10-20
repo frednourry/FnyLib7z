@@ -117,17 +117,6 @@ class MainActivity : AppCompatActivity() {
                 rapportTest +=  "\nUnarchive ${lastZipFile.absolutePath} (fileSize=$fileSize) \n result=${FnyLib7z.getResultMessage(result)} in $extractDir"
                 Log.v(TAG, " ZIP result = $result in $extractDir")
 
-                // List an archive content (get the number of files)
-                result = FnyLib7z.getInstance().listFiles(lastZipUri, returnCount = true, filtersList=listOf("*.jpg"), stdOutputPath=stdoutFilePath)
-                if (result >= 0) {
-                    rapportTest +=  "\n\nlistFiles:: numbers of files = $result (filter=$filtersList)"
-                    Log.v(TAG, "    listFiles:: numbers of files = $result")
-
-                } else {
-                    rapportTest +=  "\n\nlistFiles result=${FnyLib7z.getResultMessage(result)}"
-                    Log.v(TAG, "    listFiles = $result")
-                }
-
                 // Create archive file from files
                 val newArchiveFile = File(cacheDir.absolutePath+ File.separator+"newArchive.zip")
                 result = FnyLib7z.getInstance().compressFiles(newArchiveFile, paths=listOf(extractDir.absolutePath+File.separator+"*.jpg"), stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
@@ -137,12 +126,12 @@ class MainActivity : AppCompatActivity() {
 
                 // Delete files in archive
                 val filesToDeleteList = listOf("util.txt")
-                result = FnyLib7z.getInstance().deleteInArchive(lastZipUri, filesToDeleteList, stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
+                result = FnyLib7z.getInstance().deleteInArchive(lastZipUri, filesToDeleteList)
                 rapportTest +=  "\n\ndeleteInArchive:: ($filesToDeleteList) result=${FnyLib7z.getResultMessage(result)}"
                 Log.v(TAG, "    deleteInArchive = ${result == 0} $filesToDeleteList")
 
                 // List files with details
-                result = FnyLib7z.getInstance().listFiles(lastZipUri, stdErrPath=stderrFilePath, stdOutputPath=stdoutFilePath)
+                result = FnyLib7z.getInstance().listFiles(lastZipUri, sortList=true, stdOutputPath=stdoutFilePath)
                 rapportTest +=  "\n\nlistFilesWithUri:: result = ${FnyLib7z.getResultMessage(result)}"
                 Log.v(TAG, "    listFilesWithUri:: result = $result")
 

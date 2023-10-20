@@ -150,7 +150,7 @@ enum Enum
   kOutFilename,         // FNY
   kFileDescriptorId,    // FNY
   kItemsToExtract,      // FNY
-  kCountInResult        // FNY
+  kSortList             // FNY
 
   #ifndef _NO_CRYPTO
   , kPassword
@@ -277,7 +277,7 @@ static const CSwitchForm kSwitchForms[] =
   { "fny-tempoutfile",  NSwitchType::kString, false, 1 },   // FNY  - (string) Filename for the output archive (better use a path in the android cache directory)
   { "fny-fdin",  NSwitchType::kString, false, 1 },   // FNY  - (int) FileDescriptor.fd
   { "fny-n",  NSwitchType::kString, false, 1 },   // FNY  - (string) list of numbers separated by ','
-  { "fny-count", NSwitchType::kMinus }            // FNY  - return the files listed or extracted, instead of an return code
+  { "fny-sortlist", NSwitchType::kMinus }            // FNY  - sort the file list (work with List command)
 
   #ifndef _NO_CRYPTO
   , { "p",  NSwitchType::kString }
@@ -1146,8 +1146,8 @@ void CArcCmdLineParser::Parse2(CArcCmdLineOptions &options)
   }
   // END -fny-n option
 
-  // -fny-count option
-  options.ShouldReturnCountItems = parser[NKey::kCountInResult].ThereIs;
+  // -fny-sortlist option
+  options.SortList = parser[NKey::kSortList].ThereIs;
 
   // END FNY
 

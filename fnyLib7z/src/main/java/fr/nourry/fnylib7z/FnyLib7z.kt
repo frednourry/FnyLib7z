@@ -103,9 +103,7 @@ class FnyLib7z private constructor() {
         val tempDir = File(context.cacheDir.absolutePath+File.separator+tempDirName)
         Log.v(TAG, "initialize:: 0 ${tempDir.absolutePath}")
         if (!tempDir.exists()) {
-            Log.v(TAG, "initialize:: 1")
             if (tempDir.mkdirs()) {
-                Log.v(TAG, "initialize:: 2")
                 tempDirectory = tempDir.absolutePath
             } else {
                 Log.w(TAG, "initialize:: can't create temp directory ${tempDir.absolutePath}")
@@ -134,13 +132,13 @@ class FnyLib7z private constructor() {
     }
 
     // List archive content
-    fun listFiles(path: String, returnCount:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), extraArgs:String=""):Int {
+    fun listFiles(path: String, sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), extraArgs:String=""):Int {
         Log.v(TAG, "listFiles:: path=$path")
 
         var commandParams = String.format("l '$path'")
 
-        if (returnCount) {
-            commandParams += " -fny-count"
+        if (sortList) {
+            commandParams += " -fny-sortlist"
         }
         if (extraArgs.isNotEmpty()) {
             commandParams += " $extraArgs"
@@ -158,10 +156,10 @@ class FnyLib7z private constructor() {
         return execute(commandParams, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
     }
 
-    fun listFiles(file: File, returnCount:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), extraArgs:String=""):Int {
+    fun listFiles(file: File, sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), extraArgs:String=""):Int {
         Log.v(TAG, "listFiles:: file=$file")
         if (file.exists())
-            return listFiles(file.absolutePath, returnCount=returnCount, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, filtersList=filtersList, extraArgs=extraArgs)
+            return listFiles(file.absolutePath, sortList=sortList, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, filtersList=filtersList, extraArgs=extraArgs)
         else
             return RESULT_ARCHIVE_NOT_EXISTING
     }
@@ -169,7 +167,7 @@ class FnyLib7z private constructor() {
     /**
      * List the files (not directory) in an archive using its uri (should give its true path too !)
      */
-    fun listFiles(uri: Uri, returnCount:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList()):Int {
+    fun listFiles(uri: Uri, sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList()):Int {
         Log.v(TAG, "listFiles:: uri=$uri")
         if (!isInitialized()) {
             Log.v(TAG, "listFiles:: library not initialized. Should call initialize(context) first!")
@@ -183,7 +181,7 @@ class FnyLib7z private constructor() {
 //            val fd = parcelFileDescriptor.fd
             val fd = parcelFileDescriptor.detachFd()
 
-            val result = listFiles(uselessFilename, returnCount=returnCount, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, filtersList=filtersList, extraArgs="-fny-fdin$fd")
+            val result = listFiles(uselessFilename, sortList=sortList, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, filtersList=filtersList, extraArgs="-fny-fdin$fd")
             parcelFileDescriptor.close()
 
             return result

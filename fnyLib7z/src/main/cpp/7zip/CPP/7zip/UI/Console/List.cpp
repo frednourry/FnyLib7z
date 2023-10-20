@@ -20,6 +20,7 @@
 #include "ConsoleClose.h"
 #include "List.h"
 #include "OpenCallbackConsole.h"
+#include <list>
 
 using namespace NWindows;
 using namespace NCOM;
@@ -966,6 +967,19 @@ HRESULT Print_OpenArchive_Error(CStdOutStream &so, const CCodecs *codecs, const 
 
 bool CensorNode_CheckPath(const NWildcard::CCensorNode &node, const CReadArcItem &item);
 
+
+// FNY : Add a structure to compare items in archives (to sort them)
+typedef struct {
+    UString FilePath;
+    UInt32 index;
+    CListStat st;
+} ItemToPrint;
+
+bool compareItemToPrint(ItemToPrint item1, ItemToPrint item2) {
+  return wcscmp(item1.FilePath, item2.FilePath)<=0;
+}
+// END FNY
+
 HRESULT ListArchives(CCodecs *codecs,
     const CObjectVector<COpenType> &types,
     const CIntVector &excludedFormats,
@@ -981,7 +995,7 @@ HRESULT ListArchives(CCodecs *codecs,
     const CObjectVector<CProperty> *props,
     #endif
     int idFileDescriptor,         // FNY
-    bool shouldReturnCountItems,  // FNY
+    bool sortList,                // FNY
     UInt64 &numErrors,
     UInt64 &numWarnings)
 {
@@ -1180,6 +1194,8 @@ HRESULT ListArchives(CCodecs *codecs,
     CReadArcItem item;
     UStringVector pathParts;
 
+    std::list<ItemToPrint> itemsToPrint;  // FNY : will contains the items in order to sort them
+
 //    __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","numItems = %d", numItems);
     for (UInt32 i = 0; i < numItems; i++)
     {
@@ -1243,8 +1259,30 @@ HRESULT ListArchives(CCodecs *codecs,
 
       if (isAltStream && !showAltStreams)
         continue;
-      RINOK(fp.PrintItemInfo(i, st));
+
+      // FNY
+      if (sortList) {
+        // FNY : don't write the information now, just remembers them in 'itemsToPrint'
+        itemsToPrint.push_back({fp.FilePath, i, st});
+      } else {
+        RINOK(fp.PrintItemInfo(i, st));
+      }
+      // END FNY
+// RINOK(fp.PrintItemInfo(i, st));
     }
+
+    // FNY : Sort items before print them
+    if (sortList) {
+      // FNY : Sort the items by their name
+      itemsToPrint.sort(compareItemToPrint);
+
+      // FNY : Print infos now
+      for (ItemToPrint item: itemsToPrint) {
+        fp.FilePath = item.FilePath;
+        RINOK(fp.PrintItemInfo(item.index, item.st));
+      }
+    }
+    // END FNY
 
     UInt64 numStreams = stat2.GetNumStreams();
     if (!stdInMode
@@ -1298,8 +1336,5 @@ HRESULT ListArchives(CCodecs *codecs,
 
 //  __android_log_print(ANDROID_LOG_VERBOSE,"List.cpp","nb files = %d", stat2total.MainFiles.NumFiles);
 
-  if (shouldReturnCountItems)
-    return stat2total.MainFiles.NumFiles;   // FNY - return the numbers of files
-  else
     return S_OK;
 }

@@ -170,7 +170,7 @@ static const char *kHelpString =
     "  -fny-tempoutfile[{out file}]: define the outfile archive file in the working directory (ADDED by FNY)\n"
     "  -fny-fdin{file descriptor}: number - file descriptor of the archive file already opened in java  (ADDED by FNY)\n"
     "  -fny-n[{item numbers to extract}]: string - item numbers list that will be extracted - separated by a coma ',' (ADDED by FNY)\n"
-    "  -fny-count: return the files listed, instead of an return code if no error (ADDED by FNY)\n"
+    "  -fny-sortlist: sort the items - work with List command (ADDED by FNY)\n"
     ;
 
 // ---------------------------
@@ -640,7 +640,6 @@ int Main2(
       options.TechMode)
     showStat = false;
   */
-  
 
   if (options.Command.CommandType == NCommandType::kInfo)
   {
@@ -917,7 +916,7 @@ int Main2(
       eo.TestMode = options.Command.IsTestCommand();
       eo.idFileDescriptor = options.IdFileDescriptor;             // FNY
       eo.itemsToExtract = options.ItemsToExtract;                 // FNY
-      eo.shouldReturnCountItems = options.ShouldReturnCountItems; // FNY
+      eo.SortList = options.SortList;                             // FNY
 
 #ifndef _SFX
       eo.Properties = options.Properties;
@@ -1052,8 +1051,8 @@ int Main2(
           options.Password,
           #endif
           &options.Properties,
-          options.IdFileDescriptor,       // FNY
-          options.ShouldReturnCountItems, // FNY
+          options.IdFileDescriptor,     // FNY
+          options.SortList,             // FNY
           numErrors, numWarnings);
 
       if (options.EnableHeaders)

@@ -73,7 +73,7 @@ struct CArcCmdLineOptions
   UString OutFilename;        // FNY
   int IdFileDescriptor;       // FNY
   CIntVector ItemsToExtract;  // FNY
-  bool ShouldReturnCountItems;// FNY
+  bool SortList;              // FNY
 
   #ifndef _NO_CRYPTO
   bool PasswordEnabled;

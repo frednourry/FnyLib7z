@@ -22,7 +22,7 @@ HRESULT ListArchives(CCodecs *codecs,
     const CObjectVector<CProperty> *props,
     #endif
     int idFileDescriptor,           // FNY
-    bool shouldReturnCountItems,    // FNY
+    bool sortList,                  // FNY
     UInt64 &errors,
     UInt64 &numWarnings);
 

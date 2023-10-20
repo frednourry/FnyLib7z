@@ -42,7 +42,7 @@ struct CExtractOptions: public CExtractOptionsBase
   bool TestMode;
   int idFileDescriptor;         // FNY
   CIntVector itemsToExtract;    // FNY
-  bool shouldReturnCountItems;  // FNY
+  bool SortList;  // FNY
 
   // bool ShowDialog;
   // bool PasswordEnabled;
