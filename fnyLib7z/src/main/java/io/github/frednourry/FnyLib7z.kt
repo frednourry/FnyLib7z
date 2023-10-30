@@ -96,8 +96,14 @@ class FnyLib7z private constructor() {
 
     private lateinit var context:Context
     private lateinit var tempDirectory:String
+    private lateinit var emptyDate:Date         // Define an empty date in case a file doesn't have one
+
     fun initialize(c:Context) {
         context = c
+
+        // Set the empty date
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        emptyDate = dateFormatter.parse("1900-01-01 00:00:00")!!
 
         // Create the temp dir if not exists
         val tempDir = File(context.cacheDir.absolutePath+File.separator+tempDirName)
@@ -209,7 +215,15 @@ class FnyLib7z private constructor() {
                     val strCompressedSize = line.substring(IntRange(39, 50))
                     val strName = line.substring(53)
 
-//                    Log.v(TAG, "$strDate|$strAttr|$strSize|$strCompressedSize||$strName")
+                    val date = try {
+                        if (strDate.trim() != "")
+                            dateFormatter.parse(strDate)!!
+                        else
+                            emptyDate
+                    } catch(e:Exception) {
+                        emptyDate
+                    }
+
                     mutList.add(
                         itemListFnyLib7z(
                             name=strName,
@@ -220,7 +234,7 @@ class FnyLib7z private constructor() {
                             isArchive = (strAttr[4]=='A'),
                             size = strSize.trim().toInt(),
                             compressedSize = strCompressedSize.trim().toInt(),
-                            date = dateFormatter.parse(strDate)!!
+                            date = date
                         )
                     )
                 }
