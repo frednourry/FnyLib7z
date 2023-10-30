@@ -11,7 +11,7 @@ int executeCommand(const char *cmd) {
     }
     for (int i = 0; i < argc; i++) {
         argv[i] = temp[i];
-//        __android_log_print(ANDROID_LOG_VERBOSE,"SO","arg[%d]:[%s]", i, argv[i]);
+//        __android_log_print(ANDROID_LOG_VERBOSE,"libfnyLib7z.so","arg[%d]:[%s]", i, argv[i]);
     }
     return main(argc, argv);
 }

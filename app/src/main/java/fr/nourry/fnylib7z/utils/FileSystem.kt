@@ -125,7 +125,7 @@ fun stripExtension(filename:String): String = filename.substring(0, filename.las
 // Retrieves a list of comics uri order by its type and name
 // Precond: the given uri is a directory
 fun getUriListFromUri(context: Context, uri:Uri, bOnlyFile:Boolean = false): List<Uri> {
-    Log.v("FileSystem","getComicEntriesFromDocFile uri = $uri")
+    Log.v("FileSystem","getUriListFromUri uri = $uri")
 
     val docId = DocumentsContract.getDocumentId(uri)
     val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, docId)
@@ -154,7 +154,7 @@ fun getUriListFromUri(context: Context, uri:Uri, bOnlyFile:Boolean = false): Lis
                 val lastModified = c.getString(4)
 
                 val documentUri = DocumentsContract.buildDocumentUriUsingTree(uri, documentId)
-//                Log.v("FileSystem","getComicEntriesFromDocFile :: documentUri = $documentUri")
+//                Log.v("FileSystem","getUriListFromUri :: documentUri = $documentUri")
 
                 if (!bOnlyFile && DocumentsContract.Document.MIME_TYPE_DIR == mime) {
                     resultDirs.add(documentUri)
@@ -175,7 +175,7 @@ fun getUriListFromUri(context: Context, uri:Uri, bOnlyFile:Boolean = false): Lis
             results = tempResultDirs.plus(tempResultComics)
         }
     } catch (e: java.lang.Exception) {
-        Log.w("FileSystem","getComicEntriesFromDocFile :: Failed query: $e")
+        Log.w("FileSystem","getUriListFromUri :: Failed query: $e")
     } finally {
         c?.close()
     }

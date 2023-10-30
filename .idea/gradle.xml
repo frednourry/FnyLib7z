@@ -12,7 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/fnyLib7z" />
+            <option value="$PROJECT_DIR$/fnylib7z" />
           </set>
         </option>
       </GradleProjectSettings>
