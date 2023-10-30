@@ -14,7 +14,7 @@
 
 Android library based on 7-zip sources that allows you to open and compress files using path, File or Uri.
 
-When I was writing [**myKomik**][1], I needed a way to open comics (archives) from an URI and to be 
+When I was writing [**myKomik**][1], I needed a way to open comics (archives) from an URI in order to be 
 able to use the `ACTION_OPEN_DOCUMENT_TREE` intent. Having found nothing, I decided to make my own library.
 I started from [Hu Zong Yao's project][2] which integrates the [7z code][3] for Android, and I added 
 the possibility of manipulating archives no longer with their path, but with their FileDescriptor (by 
@@ -61,7 +61,7 @@ val result = FnyLib7z.getInstance().execute("l /path/to/my/archive", stdOutputPa
 ## Helper functions
 
 There are four helper functions to list, decompress and compress or update archives. You can use as 
-input either a path, a File object, or a Uri (except for compress).
+input either a path, a File object, nUri (except for compress).
 
 ### List (and parsing) the content of an archive
 To list the contents of an archive, you must first create the output file with `listFiles(...)`, and
