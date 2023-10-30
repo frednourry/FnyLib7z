@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "fr.nourry.fnylib7z"
+    namespace = "io.github.fnylib7z"
     compileSdk = 33
 
     defaultConfig {
@@ -55,3 +55,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
+
+// For this library publication
+ext["PUBLISH_GROUP_ID"] = "io.github.frednourry"
+ext["PUBLISH_VERSION"] = "0.9"
+ext["PUBLISH_ARTIFACT_ID"] = "fnylib7z"
+
+apply(from = "publish-remote.gradle")
