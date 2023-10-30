@@ -1,4 +1,4 @@
-package fr.nourry.fnylib7z
+package io.github.fnylib7z
 
 import org.junit.Test
 

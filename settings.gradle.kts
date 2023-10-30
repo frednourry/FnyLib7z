@@ -10,9 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io" )
     }
 }
 
 rootProject.name = "FnyLib7z"
 include(":app")
-include(":fnyLib7z")
+include(":fnylib7z")
