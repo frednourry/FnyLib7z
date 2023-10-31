@@ -5,6 +5,7 @@
 - **[Presentation](#presentation)**
 - **[Usage](#usage)**
 - **[Helper functions](#helper-functions)**
+- **[Example](#example)**
 - **[License](#license)**
 - **[Author](#author)**
 
@@ -24,19 +25,22 @@ The current integrated 7-zip version is 16.04.
 
 ## Usage
 
-* Add a new dependencie in your build.gradle(app):
+* Add a new dependency in your build.gradle:
 
 ```
 dependencies {
     ...
-    implementation 'io.github.frednourry:fnylib7z:0.9'
-    ....
+    implementation "io.github.frednourry:fnylib7z:0.9.1"
+     or
+    implementation ("io.github.frednourry:fnylib7z:0.9.1")
+    ...
 }
 ```
 
 
 * There are two main functions, `get7zVersionInfo()` and `execute(...)`, but I have added some helper
-  functions for specific uses (list, decompress, etc...)
+  functions for specific uses (list, decompress, etc...). FnyLib7z is a singleton that need to be 
+  initialized by `FnyLib7z.getInstance().initialize(context)`.
 
 Example:
 ```
@@ -105,7 +109,11 @@ val filesToDeleteList = listOf("util.txt")
 val result = FnyLib7z.getInstance().deleteInArchive("/path/to/my/archive", filtersList=filesToDeleteList, caseSensitive=true)
 ```
 
-### A reminder for each method and their parameters
+## Example
+ * You will find a complete example in [MainActivity.kt][5]. Use the `ACTION_OPEN_DOCUMENT_TREE` intent 
+   to select a directory with ZIP files and the application will test on the last one in the list using its Uri.
+
+ * ### A reminder for each method and their parameters
 | Method            | Path | File | Uri | filtersList | caseSensitive| sortList | numListToExtract
 | :-                | :-:  |  :-: | :-: | :-:         | :-:          | :-:      | :-:              
 | `listFiles`       | ✔    | ✔   |  ✔  | ✔           | ✖            | ✔       | ✖               
@@ -133,3 +141,4 @@ Frederic Nourry - [@frednourry][4] on GitHub
 [2]: https://github.com/hzy3774/AndroidP7zip
 [3]: https://www.7-zip.org/
 [4]: https://github.com/frednourry
+[5]: https://github.com/frednourry/FnyLib7z/blob/main/app/src/main/java/fr/nourry/fnylib7z/MainActivity.kt
