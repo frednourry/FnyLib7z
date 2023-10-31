@@ -16,6 +16,13 @@ import fr.nourry.fnylib7z.utils.getUriListFromUri
 import io.github.frednourry.FnyLib7z
 import java.io.File
 
+
+/**
+ * An small app to show how to use FnyLib7z :
+ * Use the ACTION_OPEN_DOCUMENT_TREE intent to select a directory with ZIP files and the application
+ * will run tests on the last one in the list using its Uri.
+ */
+
 class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "MainActivity"
