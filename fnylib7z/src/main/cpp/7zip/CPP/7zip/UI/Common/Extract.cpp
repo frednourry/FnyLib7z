@@ -1,6 +1,5 @@
 // Extract.cpp
 
-#include <android/log.h>
 #include <list>
 #include "StdAfx.h"
 
@@ -102,8 +101,6 @@ static HRESULT DecompressArchive(
     UInt32 nbFilteredFilesToGet = options.itemsToExtract.Size();
     bool shouldFilterWithIndexes = (nbFilteredFilesToGet>0);
 
-__android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","options.SortList=%d   shouldFilterWithIndexes=%d", options.SortList, shouldFilterWithIndexes);
-
       for (UInt32 i = 0; i < numItems; i++) {
         if (elimIsPossible || !allFilesAreAllowed
             || shouldFilterWithIndexes) // FNY
@@ -148,30 +145,22 @@ __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","options.SortList=%d   sho
         }
 
         // FNY - Before add i in realIndices, we store it in itemsToSort (if we should sort and filter by index the list)
-          __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","0");
         if (options.SortList && shouldFilterWithIndexes) {
-            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","1");
             // First, add this item in 'itemsToSort' (the second part is after this loop...)
             UString lowerFilePath = item.Path;
             lowerFilePath.MakeLower_Ascii();
             itemsToSort.push_back({item.Path, lowerFilePath, i});
         } else if (shouldFilterWithIndexes) {
             // If only filtering
-            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","2");
             iFiltered++;
             if (options.itemsToExtract.FindInSorted(iFiltered)>=0) {
-                __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","3");
                 realIndices.Add(i); // This item will be extracted
             }
         } else {
             // No filter asked (so ignore sort)
-            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","4");
             realIndices.Add(i); // This item will be extracted
         }
     }
-
-    __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","realIndices.Size()=%d", realIndices.Size());
-    __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","itemsToSort.size()=%d", itemsToSort.size());
 
     // FNY : Test each item before put it in realIndices
     if (options.SortList && shouldFilterWithIndexes) {
@@ -184,7 +173,6 @@ __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","options.SortList=%d   sho
         // Filtering...
         int cptItemsToSort = 0;
         for (ItemToSort item: itemsToSort) {
-            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","%d::testing %ls", cptItemsToSort, (const wchar_t *)item.LowerFilePath);
             if (options.itemsToExtract.FindInSorted(cptItemsToSort) < 0) {
                 // Do nothing
             } else {
