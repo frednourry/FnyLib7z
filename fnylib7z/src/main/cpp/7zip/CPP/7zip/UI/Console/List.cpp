@@ -1283,6 +1283,9 @@ HRESULT ListArchives(CCodecs *codecs,
         fp.FilePath = item.FilePath;
         RINOK(fp.PrintItemInfo(item.index, item.st));
       }
+
+      // Empty itemsToPrint now
+      itemsToPrint.clear();
     }
     // END FNY
 

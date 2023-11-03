@@ -282,7 +282,7 @@ class FnyLib7z private constructor() {
     }
 
     // Uncompress an archive
-    fun uncompress(path: String, dirToExtract: File, filtersList:List<String> = emptyList(), caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), stdOutputPath:String = "", stdErrPath:String="", extraArgs:String=""):Int {
+    fun uncompress(path: String, dirToExtract: File, filtersList:List<String> = emptyList(), caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", extraArgs:String=""):Int {
         Log.v(TAG, "uncompress:: path=$path")
         var commandParams = String.format("e '$path' '-o${dirToExtract.absolutePath}' -aoa")
 
@@ -290,6 +290,10 @@ class FnyLib7z private constructor() {
             commandParams += " -ssc"
         } else {
             commandParams += " -ssc-"
+        }
+
+        if (sortList) {
+            commandParams += " -fny-sortlist"
         }
 
         if (numListToExtract.isNotEmpty()) {
@@ -310,16 +314,16 @@ class FnyLib7z private constructor() {
         return execute(commandParams, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
     }
 
-    fun uncompress(file: File, dirToExtract: File, caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList()):Int {
+    fun uncompress(file: File, dirToExtract: File, caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), sortList:Boolean = false):Int {
         Log.v(TAG, "uncompress:: file=$file")
         if (file.exists()) {
-            return uncompress(file.absolutePath, dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract)
+            return uncompress(file.absolutePath, dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract, sortList=sortList)
         } else {
             return RESULT_ARCHIVE_NOT_EXISTING
         }
     }
 
-    fun uncompress(uri:Uri, dirToExtract: File, filtersList:List<String> = emptyList(), caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), stdOutputPath:String = "", stdErrPath:String=""):Int {
+    fun uncompress(uri:Uri, dirToExtract: File, filtersList:List<String> = emptyList(), caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String=""):Int {
         Log.v(TAG, "uncompress:: uri=$uri")
         if (!isInitialized()) {
             Log.v(TAG, "uncompress:: library not initialized. Should call initialize(context) first!")
@@ -332,7 +336,7 @@ class FnyLib7z private constructor() {
         parcelFileDescriptor?.let {
 //            val fd = parcelFileDescriptor.fd
             val fd = parcelFileDescriptor.detachFd()
-            val result = uncompress(uselessFilename, dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract, extraArgs = " -fny-fdin$fd")
+            val result = uncompress(uselessFilename, dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract, sortList=sortList, extraArgs = " -fny-fdin$fd")
 
             parcelFileDescriptor.close()
 

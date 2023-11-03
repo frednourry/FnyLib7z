@@ -23,6 +23,8 @@ modifying the 7-zip code and adding some parameters).
 
 The current integrated 7-zip version is 16.04.
 
+---
+
 ## Usage
 
 * Add a new dependency in your build.gradle:
@@ -62,12 +64,14 @@ Example:
 val result = FnyLib7z.getInstance().execute("l /path/to/my/archive", stdOutputPath="/path/to/the/output/file", stdOutputPath="/path/to/the/error/file")
 ```
 
+---
+
 ## Helper functions
 
 There are four helper functions to list, decompress and compress or update archives. You can use as
 input either a path, a File object, nUri (except for compress).
 
-### List (and parsing) the content of an archive
+* #### List (and parsing) the content of an archive
 To list the contents of an archive, you must first create the output file with `listFiles(...)`, and
 then parse it with the `parseListFile(...)` method.
 ```
@@ -82,7 +86,7 @@ if (result == FnyLib7z.RESULT_OK && stdoutFile.exists()) {
 }
 ```
 
-### Uncompress an archive
+* #### Uncompress an archive
 To extract the contents of an archive, use the `uncompress(...)` method. Be sure to have write permissions
 on the output!
 ```
@@ -93,7 +97,7 @@ val result = FnyLib7z.getInstance().uncompress("/path/to/my/archive", filtersLis
 Log.v(TAG, "FnyLib7z uncompress result=$result - ${FnyLib7z.getResultMessage(result)}")
 ```
 
-### Add files in an archive (don't use Uri!)
+* #### Add files in an archive (don't use Uri!)
 The `compressFiles(...)` method adds the selected files to an archive (if the archive does not yet exist,
 it will be created).
 ```
@@ -102,24 +106,28 @@ val pathsToAddInArchive = listOf("/where/are/my/files/to/compress/*.jpg")
 val result = FnyLib7z.getInstance().compressFiles(newArchiveFile, filtersList=pathsToAddInArchive, format="zip")
 ```
 
-### Delete files in an archive
+* #### Delete files in an archive
 The `deleteInArchive(...)` method deletes the selected files in an existing archive.
 ```
 val filesToDeleteList = listOf("util.txt")
 val result = FnyLib7z.getInstance().deleteInArchive("/path/to/my/archive", filtersList=filesToDeleteList, caseSensitive=true)
 ```
 
-## Example
- * You will find a complete example in [MainActivity.kt][5]. Use the `ACTION_OPEN_DOCUMENT_TREE` intent 
-   to select a directory with ZIP files and the application will test on the last one in the list using its Uri.
+---
 
- * ### A reminder for each method and their parameters
+## Example
+ You will find a complete example in [MainActivity.kt][5]. Use the `ACTION_OPEN_DOCUMENT_TREE` intent 
+   to select a directory with ZIP files and the application will test on the last zip file in the directory, using its Uri.
+
+ #### A reminder for each method and their parameters
 | Method            | Path | File | Uri | filtersList | caseSensitive| sortList | numListToExtract
 | :-                | :-:  |  :-: | :-: | :-:         | :-:          | :-:      | :-:              
 | `listFiles`       | ✔    | ✔   |  ✔  | ✔           | ✖            | ✔       | ✖               
-| `uncompress`      | ✔    | ✔   |  ✔  | ✔           | ✔            | ✖       | ✔                
+| `uncompress`      | ✔    | ✔   |  ✔  | ✔           | ✔            | ✔       | ✔                
 | `compressFiles`   | ✔    | ✔   |  ✖  | ✔           | ✔            | ✖       | ✖                
 | `deleteInArchive` | ✔    | ✔   |  ✔  | ✔           | ✔            | ✖       | ✖
+
+ Note: When using *sortList* and *numListToExtract* together with `uncompress`, the list of items is first sorted, then filtered (in that order)
 
 ---
 
@@ -131,11 +139,12 @@ see https://www.7-zip.org/
 7-Zip is free software with open source. The most of the code is under the GNU LGPL license. Some parts of the code are under the BSD 3-clause License. Also there is unRAR license restriction for some parts of the code. Read 7-Zip License information.
 ```
 
+---
+
 ## Author
 
 Frederic Nourry - [@frednourry][4] on GitHub
 
------------------------------------
 
 [1]: https://github.com/frednourry/myKomik
 [2]: https://github.com/hzy3774/AndroidP7zip

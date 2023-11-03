@@ -1,6 +1,7 @@
 // Extract.cpp
 
 #include <android/log.h>
+#include <list>
 #include "StdAfx.h"
 
 #include "../../../../C/Sort.h"
@@ -20,6 +21,18 @@ using namespace NWindows;
 using namespace NFile;
 using namespace NDir;
 
+// FNY : Add a structure to compare items in archives (to sort them)
+typedef struct {
+    UString FilePath;
+    UString LowerFilePath;
+    UInt32 index;
+} ItemToSort;
+
+bool compareItemToSort(ItemToSort item1, ItemToSort item2) {
+    return wcscmp(item1.LowerFilePath, item2.LowerFilePath)<=0;
+}
+// END FNY
+
 static HRESULT DecompressArchive(
     CCodecs *codecs,
     const CArchiveLink &arcLink,
@@ -35,14 +48,17 @@ static HRESULT DecompressArchive(
   const CArc &arc = arcLink.Arcs.Back();
   stdInProcessed = 0;
   IInArchive *archive = arc.Archive;
-  CRecordVector<UInt32> realIndices;
+  CRecordVector<UInt32> realIndices;        // Will contains the indices of the items to extract
   
   UStringVector removePathParts;
 
   FString outDir = options.OutputDir;
   UString replaceName = arc.DefaultName;
-  
-  if (arcLink.Arcs.Size() > 1)
+
+  std::list<ItemToSort> itemsToSort;  // FNY : will contains the items in order to sort them
+
+
+    if (arcLink.Arcs.Size() > 1)
   {
     // Most "pe" archives have same name of archive subfile "[0]" or ".rsrc_1".
     // So it extracts different archives to one folder.
@@ -86,81 +102,109 @@ static HRESULT DecompressArchive(
     UInt32 nbFilteredFilesToGet = options.itemsToExtract.Size();
     bool shouldFilterWithIndexes = (nbFilteredFilesToGet>0);
 
-    for (UInt32 i = 0; i < numItems; i++)
-    {
-      if (elimIsPossible || !allFilesAreAllowed
-                                  || shouldFilterWithIndexes) // FNY
-      {
-        RINOK(arc.GetItem(i, item));
-      }
-      else
-      {
-        #ifdef SUPPORT_ALT_STREAMS
-        item.IsAltStream = false;
-        if (!options.NtOptions.AltStreams.Val && arc.Ask_AltStream)
-        {
-          RINOK(Archive_IsItem_AltStream(arc.Archive, i, item.IsAltStream));
-        }
-        #endif
-      }
+__android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","options.SortList=%d   shouldFilterWithIndexes=%d", options.SortList, shouldFilterWithIndexes);
 
-      #ifdef SUPPORT_ALT_STREAMS
-      if (!options.NtOptions.AltStreams.Val && item.IsAltStream)
-        continue;
-      #endif
-      
-      if (elimIsPossible)
-      {
-        const UString &s =
-          #ifdef SUPPORT_ALT_STREAMS
-            item.MainPath;
-          #else
+      for (UInt32 i = 0; i < numItems; i++) {
+        if (elimIsPossible || !allFilesAreAllowed
+            || shouldFilterWithIndexes) // FNY
+        {
+            RINOK(arc.GetItem(i, item));
+        } else {
+#ifdef SUPPORT_ALT_STREAMS
+            item.IsAltStream = false;
+            if (!options.NtOptions.AltStreams.Val && arc.Ask_AltStream) {
+                RINOK(Archive_IsItem_AltStream(arc.Archive, i, item.IsAltStream));
+            }
+#endif
+        }
+
+#ifdef SUPPORT_ALT_STREAMS
+        if (!options.NtOptions.AltStreams.Val && item.IsAltStream)
+            continue;
+#endif
+
+        if (elimIsPossible) {
+            const UString &s =
+#ifdef SUPPORT_ALT_STREAMS
+                    item.MainPath;
+#else
             item.Path;
-          #endif
-        if (!IsPath1PrefixedByPath2(s, elimPrefix))
-          elimIsPossible = false;
-        else
-        {
-          wchar_t c = s[elimPrefix.Len()];
-          if (c == 0)
-          {
-            if (!item.MainIsDir)
-              elimIsPossible = false;
-          }
-          else if (!IsPathSepar(c))
-            elimIsPossible = false;
+#endif
+            if (!IsPath1PrefixedByPath2(s, elimPrefix))
+                elimIsPossible = false;
+            else {
+                wchar_t c = s[elimPrefix.Len()];
+                if (c == 0) {
+                    if (!item.MainIsDir)
+                        elimIsPossible = false;
+                } else if (!IsPathSepar(c))
+                    elimIsPossible = false;
+            }
         }
-      }
 
-      if (!allFilesAreAllowed)
-      {
-        if (!CensorNode_CheckPath(wildcardCensor, item))
-          continue;
-      }
-
-      // FNY - filter the files (use iFiltered as true index)
-      if (shouldFilterWithIndexes) {
-        iFiltered++;
-//        __android_log_print(ANDROID_LOG_VERBOSE, "Extract.cpp", "i=%d iFiltered=%d isDir=%d", i, iFiltered, item.IsDir);
-        if (options.itemsToExtract.FindInSorted(iFiltered) < 0) {
-          // Ignore this item
-          continue;
+        if (!allFilesAreAllowed) {
+            if (!CensorNode_CheckPath(wildcardCensor, item))
+                continue;
         }
-      }
 
-      realIndices.Add(i); // This item will be extracted
-
-      // FNY - decrease nbFilteredFilesToGet
-      if (shouldFilterWithIndexes) {
-        nbFilteredFilesToGet--;
-        if (nbFilteredFilesToGet <= 0) {
-          // No need to continue, so exit
-          break;
+        // FNY - Before add i in realIndices, we store it in itemsToSort (if we should sort and filter by index the list)
+          __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","0");
+        if (options.SortList && shouldFilterWithIndexes) {
+            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","1");
+            // First, add this item in 'itemsToSort' (the second part is after this loop...)
+            UString lowerFilePath = item.Path;
+            lowerFilePath.MakeLower_Ascii();
+            itemsToSort.push_back({item.Path, lowerFilePath, i});
+        } else if (shouldFilterWithIndexes) {
+            // If only filtering
+            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","2");
+            iFiltered++;
+            if (options.itemsToExtract.FindInSorted(iFiltered)>=0) {
+                __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","3");
+                realIndices.Add(i); // This item will be extracted
+            }
+        } else {
+            // No filter asked (so ignore sort)
+            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","4");
+            realIndices.Add(i); // This item will be extracted
         }
-      }
-
     }
-    
+
+    __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","realIndices.Size()=%d", realIndices.Size());
+    __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","itemsToSort.size()=%d", itemsToSort.size());
+
+    // FNY : Test each item before put it in realIndices
+    if (options.SortList && shouldFilterWithIndexes) {
+        // Should sort the list itemsToSort?
+        if (options.SortList) {
+            // Sort the items by their name
+            itemsToSort.sort(compareItemToSort);
+        }
+
+        // Filtering...
+        int cptItemsToSort = 0;
+        for (ItemToSort item: itemsToSort) {
+            __android_log_print(ANDROID_LOG_VERBOSE,"Extract.cpp","%d::testing %ls", cptItemsToSort, (const wchar_t *)item.LowerFilePath);
+            if (options.itemsToExtract.FindInSorted(cptItemsToSort) < 0) {
+                // Do nothing
+            } else {
+                realIndices.Add(item.index);
+                nbFilteredFilesToGet--;
+
+                // Test if nbFilteredFilesToGet is 0
+                if (nbFilteredFilesToGet<=0) {
+                    // Nothing left to research, so exit
+                    break;
+                }
+            }
+            cptItemsToSort++;
+        }
+
+        // Empty itemsToSort now
+        itemsToSort.clear();
+    }
+    // END FNY
+
     if (realIndices.Size() == 0)
     {
       callback->ThereAreNoFiles();
