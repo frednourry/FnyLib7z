@@ -127,7 +127,7 @@ val result = FnyLib7z.getInstance().deleteInArchive("/path/to/my/archive", filte
 | `compressFiles`   | ✔    | ✔   |  ✖  | ✔           | ✔            | ✖       | ✖                
 | `deleteInArchive` | ✔    | ✔   |  ✔  | ✔           | ✔            | ✖       | ✖
 
- Note: When using *sortList* and *numListToExtract* together with `uncompress`, the list of items is first sorted, then filtered (in that order)
+ Note: When using *sortList* and *numListToExtract* together with `uncompress`, the list of items is first sorted, then filtered (in that order).
 
 ---
 
