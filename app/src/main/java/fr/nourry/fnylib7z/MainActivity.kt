@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.StrictMode
 import android.provider.DocumentsContract
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,7 +46,16 @@ class MainActivity : AppCompatActivity() {
         // Example of a call to a native method
         binding.zipVersion.text = "7zip version : ${FnyLib7z.get7zVersionInfo()}"
 
-
+/*        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
+                .detectLeakedClosableObjects()
+                .detectFileUriExposure()
+                .detectLeakedRegistrationObjects()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        )
+*/
         val uriInStorage = treeUriInSharedStorage()
         if (uriInStorage == null) {
             askTreeUriPermission()
