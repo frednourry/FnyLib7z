@@ -32,9 +32,9 @@ The current integrated 7-zip version is 16.04.
 ```
 dependencies {
     ...
-    implementation "io.github.frednourry:fnylib7z:0.9.3"
+    implementation "io.github.frednourry:fnylib7z:0.9.5"
      or
-    implementation ("io.github.frednourry:fnylib7z:0.9.3")
+    implementation ("io.github.frednourry:fnylib7z:0.9.5")
     ...
 }
 ```

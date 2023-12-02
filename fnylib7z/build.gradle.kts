@@ -57,7 +57,7 @@ dependencies {
 }
 
 ext["PUBLISH_GROUP_ID"] = "io.github.frednourry"
-ext["PUBLISH_VERSION"] = "0.9.3"
+ext["PUBLISH_VERSION"] = "0.9.5"
 ext["PUBLISH_ARTIFACT_ID"] = "fnylib7z"
 
 apply(from = "publish-remote.gradle")

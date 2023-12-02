@@ -148,7 +148,11 @@ fun getUriListFromUri(context: Context, uri:Uri, bOnlyFile:Boolean = false): Lis
             // Get the URIs
             while (c.moveToNext()) {
                 val documentId: String = c.getString(0)
-                val name = URLDecoder.decode(c.getString(1), "utf-8")
+                var name0 = c.getString(1)
+                name0 = name0.replace("%(?![0-9a-fA-F]{2})".toRegex(), "%25")
+                name0 = name0.replace("\\+".toRegex(), "%2B")
+                name0 = name0.replace("!", "\\!")
+                var name = URLDecoder.decode(name0, "utf-8")
                 val mime = c.getString(2)
                 val size = c.getString(3)
                 val lastModified = c.getString(4)

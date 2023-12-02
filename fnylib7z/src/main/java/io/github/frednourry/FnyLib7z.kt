@@ -163,7 +163,7 @@ class FnyLib7z private constructor() {
     fun listFiles(file: File, filtersList:List<String> = emptyList(), sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", extraArgs:String=""):Int {
         Log.v(TAG, "listFiles:: file=$file")
         if (file.exists())
-            return listFiles(file.absolutePath, filtersList=filtersList, sortList=sortList, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, extraArgs=extraArgs)
+            return listFiles(checkFilenameForCommandLine(file.absolutePath), filtersList=filtersList, sortList=sortList, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, extraArgs=extraArgs)
         else
             return RESULT_ARCHIVE_NOT_EXISTING
     }
@@ -178,7 +178,7 @@ class FnyLib7z private constructor() {
             return RESULT_LIBRARY_NOT_INIT
         }
 
-        val uselessFilename = getNameFromUriLastPathSegment(uri, "myArchiveName.arc")
+        val uselessFilename = checkFilenameForCommandLine(getNameFromUriLastPathSegment(uri, "myArchiveName.arc"))
 
         val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")
         parcelFileDescriptor?.let {
@@ -253,7 +253,7 @@ class FnyLib7z private constructor() {
         }
 
         var result = -1;
-        var commandParams = String.format("a '${path}' -y -t$format -aoa '-w$tempDirectory'")
+        var commandParams = String.format("a '${checkFilenameForCommandLine(path)}' -y -t$format -aoa '-w$tempDirectory'")
 
         if (caseSensitive) {
             commandParams += " -ssc"
@@ -278,13 +278,13 @@ class FnyLib7z private constructor() {
     fun compressFiles(file:File, filtersList: List<String>, format:String="zip", caseSensitive:Boolean=false, stdOutputPath:String = "", stdErrPath:String=""):Int {
         Log.v(TAG, "compressFiles:: file=$file")
         // Test if file already exists?
-        return compressFiles(file.absolutePath, filtersList=filtersList, format=format, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
+        return compressFiles(checkFilenameForCommandLine(file.absolutePath), filtersList=filtersList, format=format, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
     }
 
     // Uncompress an archive
     fun uncompress(path: String, dirToExtract: File, filtersList:List<String> = emptyList(), caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), sortList:Boolean = false, stdOutputPath:String = "", stdErrPath:String="", extraArgs:String=""):Int {
         Log.v(TAG, "uncompress:: path=$path")
-        var commandParams = String.format("e '$path' '-o${dirToExtract.absolutePath}' -aoa")
+        var commandParams = String.format("e '${checkFilenameForCommandLine(path)}' '-o${dirToExtract.absolutePath}' -aoa")
 
         if (caseSensitive) {
             commandParams += " -ssc"
@@ -317,7 +317,7 @@ class FnyLib7z private constructor() {
     fun uncompress(file: File, dirToExtract: File, caseSensitive:Boolean=false, numListToExtract:List<Int> = emptyList(), stdOutputPath:String = "", stdErrPath:String="", filtersList:List<String> = emptyList(), sortList:Boolean = false):Int {
         Log.v(TAG, "uncompress:: file=$file")
         if (file.exists()) {
-            return uncompress(file.absolutePath, dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract, sortList=sortList)
+            return uncompress(checkFilenameForCommandLine(file.absolutePath), dirToExtract=dirToExtract, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath, numListToExtract=numListToExtract, sortList=sortList)
         } else {
             return RESULT_ARCHIVE_NOT_EXISTING
         }
@@ -330,7 +330,7 @@ class FnyLib7z private constructor() {
             return RESULT_LIBRARY_NOT_INIT
         }
 
-        val uselessFilename = getNameFromUriLastPathSegment(uri, "myArchiveName.arc")
+        val uselessFilename = checkFilenameForCommandLine(getNameFromUriLastPathSegment(uri, "myArchiveName.arc"))
 
         val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")
         parcelFileDescriptor?.let {
@@ -348,7 +348,7 @@ class FnyLib7z private constructor() {
     // Delete file(s) in an archive
     fun deleteInArchive(path:String, filtersList: List<String>, caseSensitive:Boolean=false, stdOutputPath:String = "", stdErrPath:String="", extraArgs:String=""):Int {
         Log.v(TAG, "deleteInArchive:: path=$path")
-        var commandParams = String.format("d '$path' '-w$tempDirectory' '-o$tempDirectory'")
+        var commandParams = String.format("d '${checkFilenameForCommandLine(path)}' '-w$tempDirectory' '-o$tempDirectory'")
 
         if (caseSensitive) {
             commandParams += " -ssc"
@@ -373,7 +373,7 @@ class FnyLib7z private constructor() {
 
     fun deleteInArchive(file:File, filtersList: List<String>, caseSensitive:Boolean=false, stdOutputPath:String = "", stdErrPath:String=""):Int {
         if (file.exists()) {
-            return deleteInArchive(file.absolutePath, filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
+            return deleteInArchive(checkFilenameForCommandLine(file.absolutePath), filtersList=filtersList, caseSensitive=caseSensitive, stdOutputPath=stdOutputPath, stdErrPath=stdErrPath)
         } else {
             return RESULT_ARCHIVE_NOT_EXISTING
         }
@@ -388,7 +388,7 @@ class FnyLib7z private constructor() {
 
         var result = RESULT_PARCEL_DESC_ERROR
 
-        val uselessFilename = getNameFromUriLastPathSegment(uri, "myArchiveName.arc")
+        val uselessFilename = checkFilenameForCommandLine(getNameFromUriLastPathSegment(uri, "myArchiveName.arc"))
 
         // Define a temp outfile (that doesn't exist)
         val tempOutputArchiveName = "archive.zip"
@@ -461,6 +461,14 @@ class FnyLib7z private constructor() {
             return defaultNameIfNull
         }
         return defaultNameIfNull
+    }
+
+    // Check a filename to use it in a command line
+    // Here, simply check if there is a "'" or a "%"
+    private fun checkFilenameForCommandLine(name:String):String {
+        var temp = name.replace("'", "\\\'")
+        temp = temp.replace("%", "%%");
+        return temp
     }
 
 }

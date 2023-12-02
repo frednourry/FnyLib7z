@@ -27,11 +27,6 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "MainActivity"
-
-        var PERMISSIONS = arrayOf(
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
     }
 
     private lateinit var binding: ActivityMainBinding
